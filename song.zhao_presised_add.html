@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LS_1st</title>
+    <style>
+        body{
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 30px;
+        }
+        input,button{
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to my Local Storage first try - Numbers</h1>
+
+    <div id="greeting"></div>
+    <div id="stats" style="margin-top: 10px;"></div>
+    
+    <label for="num">Enter a number:</label>
+    <input type="text" id="num" placeholder="Your number" />
+    <button onclick="saveNum()">Save Number</button>
+
+    <script>
+        window.onload = function() {
+            const numbers = JSON.parse(localStorage.getItem('userNumbers')) || [];
+
+            updateDisplay(numbers);
+        };
+
+        function saveNum() {
+            const numInput = document.getElementById('num');
+            const numStr = numInput.value;
+
+            // 检查输入是否为空
+            if (!numStr) {
+                alert('Please enter your num!');
+                return; // 停止函数
+            }
+
+            // 将输入字符串转换为数字。parseFloat 可以处理十进制数。
+            const num = parseFloat(numStr);
+
+            // 检查转换结果是否为 NaN (Not-a-Number)，这意味着输入不是一个有效的数字。
+            if (isNaN(num)) {
+                alert('Please enter a valid number!');
+                return; // 停止函数
+            }
+
+            // 从 localStorage 获取当前的数字数组
+            let numbers = JSON.parse(localStorage.getItem('userNumbers')) || [];
+
+            // 将新数字添加到数组中
+            numbers.push(num);
+
+            // 将更新后的数组存回 localStorage。
+            // 我们必须先将其转换为 JSON 字符串。
+            localStorage.setItem('userNumbers', JSON.stringify(numbers));
+
+            // 更新页面上显示的信息
+            updateDisplay(numbers);
+
+            // 清空输入字段以便下次输入
+            numInput.value = '';
+        }
+
+        /**
+         * 此函数更新页面以显示最新统计信息
+         */
+        function updateDisplay(numbers) {
+            const greetingEl = document.getElementById('greeting');
+            const statsEl = document.getElementById('stats');
+
+            // 如果数组为 null 或为空，则无需显示任何内容。
+            if (!numbers || numbers.length === 0) {
+                greetingEl.innerText = 'Enter a number to start.';
+                statsEl.innerText = '';
+                return;
+            }
+
+            // 获取最后输入的数字
+            const lastNum = numbers[numbers.length - 1];
+            greetingEl.innerText = `Hello, your last entered number is ${lastNum}!`;
+
+            // 计算数字的个数
+            const count = numbers.length;
+            
+            // 使用 reduce 方法计算数组中所有数字的总和。
+            const sum = numbers.reduce((total, current) => total + current, 0);
+
+            // 显示个数和总和
+            statsEl.innerText = `You have entered ${count} numbers. The sum is ${sum}.`;
+        }
+    </script>
+</body>
+</html>
